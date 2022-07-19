@@ -11,7 +11,7 @@ async def echo(message: types.Message):
             await bot.pin_chat_message(message.chat.id, message.message_id)
             return
     if message.text.startswith('!unpin'):
-        await bot.unpin_chat_message(message.chat.id, message.message_id)
+        await bot.unpin_chat_message(message.chat.id)
         return
     if message.text.lower() == 'dice':
         await bot.send_message(message.chat.id, "Кости для бота")
