@@ -119,7 +119,7 @@ async def delete_dish(message: types.Message):
 
 
 async def complete_delete(call: types.CallbackQuery):
-    await bot_db.sql_command_delete(call.data.replace('delete: ', ''))
+    await bot_db.sql_command_delete(call.data.replace('delete ', ''))
     await call.answer(text="Блюдо удалено", show_alert=True)
     await bot.delete_message(call.message.chat.id, call.message.message_id)
 
