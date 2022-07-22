@@ -12,6 +12,7 @@ async def echo(message: types.Message):
             return
     if message.text.startswith('!unpin'):
         await bot.unpin_chat_message(message.chat.id)
+        await message.answer(f'Закрепленно сообщение откреплено')
         return
     if message.text.isdigit():
         await bot.send_message(message.chat.id, int(message.text) ** 2)

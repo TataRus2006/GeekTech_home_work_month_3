@@ -2,6 +2,7 @@ from aiogram import types, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
 from config import bot
 from keyboards import client_kb
+from database.bot_db import sql_command_random
 
 async def start_handler(message: types.Message):
     await bot.send_message(message.chat.id,
@@ -64,9 +65,14 @@ async def dice_handler(message: types.Message):
     return
 
 
+async def show_random_dish(message: types.Message):
+    await sql_command_random(message)
+
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(start_handler, commands=['start'])
     dp.register_message_handler(help_handler, commands=['help'])
     dp.register_message_handler(quiz_handler, commands=['quiz'])
     dp.register_message_handler(meme_handler, commands=['meme'])
     dp.register_message_handler(dice_handler, commands=['dice'])
+    dp.register_message_handler(show_random_dish, commands=['random_dish'])

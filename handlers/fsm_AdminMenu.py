@@ -1,10 +1,11 @@
 from aiogram import types, Dispatcher
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from config import bot, ADMIN
 from keyboards import client_kb
-
+from database import bot_db
 
 class FSMAdmin(StatesGroup):
     dish_photo = State()                      # фотография блюда
@@ -42,43 +43,85 @@ async def load_dish_description(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data["description"] = message.text
     await FSMAdmin.next()
-    await message.answer("Введите вес блюда")
+    await message.answer("Введите вес блюда в граммах")
 
 
 async def load_dish_weight(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data["weight"] = message.text
-    await FSMAdmin.next()
-    await message.answer("Введите калорийность блюда")
+    try:
+        async with state.proxy() as data:
+            data["weight"] = int(message.text)
+        await FSMAdmin.next()
+        await message.answer("Введите калорийность блюда в килокалории")
+    except:
+        await message.answer("Вводите только цифры!")
 
 
 async def load_dish_calorie(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data["calorie"] = message.text
-    await FSMAdmin.next()
-    await message.answer("Введите цену блюда")
+    try:
+        async with state.proxy() as data:
+            data["calorie"] = int(message.text)
+        await FSMAdmin.next()
+        await message.answer("Введите цену блюда в в кыргызских сомах")
+    except:
+        await message.answer("Вводите только цифры!")
 
 
 async def load_dish_price(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data["price"] = message.text
-        await bot.send_photo(message.chat.id, data['photo'],
-                             caption=f"Название блюда: {data['name']}\n"
-                                     f"Описание блюда: {data['description']}\n"
-                                     f"Вес блюда: {data['weight']}\n"
-                                     f"Калорийность блюда: {data['calorie']}\n"
-                                     f"Цена блюда: {data['price']}\n")
-    await state.finish()
-    await message.answer(f"Вы успешно добавили блюдо: \"{data['name']}\"")
-
+    try:
+        async with state.proxy() as data:
+            data["price"] = int(message.text)
+            await bot.send_photo(message.chat.id, data['photo'],
+                                 caption=f"Название блюда: {data['name']}\n"
+                                         f"Описание блюда: {data['description']}\n"
+                                         f"Вес блюда: {data['weight']} грамм\n"
+                                         f"Калорийность блюда: {data['calorie']} ккал\n"
+                                         f"Цена блюда: {data['price']} сом\n")
+        await bot_db.sql_command_insert(state)
+        await state.finish()
+        await message.answer(f"Вы успешно добавили блюдо: \"{data['name']}\"", reply_markup=client_kb.start_marcup)
+    except:
+        await message.answer("Вводите только цифры!")
 
 async def cancel_add_dish(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         return
     else:
+        await message.answer("Добавление блюда отменено!", reply_markup=client_kb.start_marcup)
         await state.finish()
-        await message.answer("Добавление блюда отменено!")
+
+
+async def show_dish(message: types.Message):
+    dishs = await bot_db.sql_command_all()
+    for dish in dishs:
+        await bot.send_photo(message.chat.id, dish[0],
+                             caption=f"Название блюда: {dish[1]}\n"
+                                     f"Описание блюда: {dish[2]}\n"
+                                     f"Вес блюда: {dish[3]} грамм\n"
+                                     f"Калорийность блюда: {dish[4]} ккал\n"
+                                     f"Цена блюда: {dish[5]} сом\n")
+
+
+async def delete_dish(message: types.Message):
+    if message.from_user.id in ADMIN and message.chat.type == "private":
+        dishs = await bot_db.sql_command_all()
+        for dish in dishs:
+            await bot.send_photo(message.from_user.id, dish[0],
+                                 caption=f"Название блюда: {dish[1]}\n"
+                                         f"Описание блюда: {dish[2]}\n"
+                                         f"Вес блюда: {dish[3]} грамм\n"
+                                         f"Калорийность блюда: {dish[4]} ккал\n"
+                                         f"Цена блюда: {dish[5]} сом\n",
+                                 reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(f"delete: {dish[1]}",
+                                 callback_data=f"delete {dish[1]}")))
+    else:
+        await message.reply("Вы не являетесь администратором!")
+
+
+async def complete_delete(call: types.CallbackQuery):
+    await bot_db.sql_command_delete(call.data.replace('delete: ', ''))
+    await call.answer(text="Блюдо удалено", show_alert=True)
+    await bot.delete_message(call.message.chat.id, call.message.message_id)
 
 
 def register_handlers_fsm_menu(dp: Dispatcher):
@@ -91,3 +134,7 @@ def register_handlers_fsm_menu(dp: Dispatcher):
     dp.register_message_handler(load_dish_weight, state=FSMAdmin.dish_weight)
     dp.register_message_handler(load_dish_calorie, state=FSMAdmin.dish_calorie)
     dp.register_message_handler(load_dish_price, state=FSMAdmin.dish_price)
+    dp.register_message_handler(show_dish, commands=["show_dish"])
+    dp.register_message_handler(delete_dish, commands=["del_dish"])
+    dp.register_callback_query_handler(complete_delete,
+                                       lambda call: call.data and call.data.startswith('delete '))
