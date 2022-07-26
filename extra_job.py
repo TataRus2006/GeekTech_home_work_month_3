@@ -1,5 +1,5 @@
 def make_readable(second):
-    return f"{'{:02}'.format(second//3600)}:{'{:02}'.format(second//60%60)}:{'{:02}'.format(second%60)}"
+    return f'"{second//3600:02}:{second//60%60:02}:{second%60:02}"'
 
 
 print(make_readable(0))            # "00:00:00"
