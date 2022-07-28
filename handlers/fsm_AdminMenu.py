@@ -91,9 +91,9 @@ async def cancel_add_dish(message: types.Message, state: FSMContext):
         await state.finish()
 
 
-async def show_dish(message: types.Message):
-    dishs = await bot_db.sql_command_all()
-    for dish in dishs:
+async def show_menu(message: types.Message):
+    menu = await bot_db.sql_command_all()
+    for dish in menu:
         await bot.send_photo(message.chat.id, dish[0],
                              caption=f"Название блюда: {dish[1]}\n"
                                      f"Описание блюда: {dish[2]}\n"
@@ -104,8 +104,8 @@ async def show_dish(message: types.Message):
 
 async def delete_dish(message: types.Message):
     if message.from_user.id in ADMIN and message.chat.type == "private":
-        dishs = await bot_db.sql_command_all()
-        for dish in dishs:
+        dishes = await bot_db.sql_command_all()
+        for dish in dishes:
             await bot.send_photo(message.from_user.id, dish[0],
                                  caption=f"Название блюда: {dish[1]}\n"
                                          f"Описание блюда: {dish[2]}\n"
@@ -134,7 +134,7 @@ def register_handlers_fsm_menu(dp: Dispatcher):
     dp.register_message_handler(load_dish_weight, state=FSMAdmin.dish_weight)
     dp.register_message_handler(load_dish_calorie, state=FSMAdmin.dish_calorie)
     dp.register_message_handler(load_dish_price, state=FSMAdmin.dish_price)
-    dp.register_message_handler(show_dish, commands=["show_dish"])
+    dp.register_message_handler(show_menu, commands=["show_menu"])
     dp.register_message_handler(delete_dish, commands=["del_dish"])
     dp.register_callback_query_handler(complete_delete,
                                        lambda call: call.data and call.data.startswith('delete '))
