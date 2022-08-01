@@ -48,3 +48,50 @@ def parser():
         return answer
     else:
         raise Exception("Error in parser!")
+
+
+
+
+
+
+# import requests
+# from bs4 import BeautifulSoup
+#
+# URL = "https://www.kinoafisha.info/afisha/selection/horror_selection/"
+#
+# HEADERS = {
+#     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0",
+#     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+#
+# }
+#
+#
+# def get_html(url, params=''):                                       # возвращает html код этого сайта
+#     req = requests.get(url, headers=HEADERS, params=params)
+#     return req
+#
+#
+# def get_data(html):
+#     soup = BeautifulSoup(html, "html.parser")
+#     items = soup.find_all("div", class_="afisha_movieList movieList movieList-grid grid")
+#     print(items)
+#     films = []
+#     for item in items:
+#         films.append({
+#             "title": item.find("a", class_='movieItem_title').getText(),
+#             "actions": item.find("span", class_='movieItem_genres').getText(),
+#             "yers": item.find("span", class_='movieItem_year').getText(),
+#             "link": item.find('a', class_='movieItem_title').get('href')
+#         })
+#     return films
+#
+# def parser():
+#     html = get_html(URL)
+#     if html.status_code == 200:
+#         answer = []
+#         for page in range(1, 2):
+#             html = get_html(f"{URL}page1_{page}.php")
+#             answer.extend(get_data(html.text))
+#         return answer
+#     else:
+#         raise Exception("Error in parser!")
