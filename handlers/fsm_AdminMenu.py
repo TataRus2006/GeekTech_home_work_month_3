@@ -87,7 +87,7 @@ async def cancel_add_dish(message: types.Message, state: FSMContext):
     if current_state is None:
         return
     else:
-        await message.answer("Добавление блюда отменено!", reply_markup=client_kb.start_marcup)
+        await message.answer("Добавление блюда отменено!", reply_markup=client_kb.mainMenu)
         await state.finish()
 
 
@@ -127,7 +127,7 @@ async def complete_delete(call: types.CallbackQuery):
 def register_handlers_fsm_menu(dp: Dispatcher):
     dp.register_message_handler(cancel_add_dish, state="*", commands='cancel')
     dp.register_message_handler(cancel_add_dish, Text(equals='cancel', ignore_case=True), state="*")
-    dp.register_message_handler(fsm_start, commands=['menu'])
+    dp.register_message_handler(fsm_start, commands=['add_dish'])
     dp.register_message_handler(load_dish_photo, state=FSMAdmin.dish_photo, content_types=["photo"])
     dp.register_message_handler(load_dish_name, state=FSMAdmin.dish_name)
     dp.register_message_handler(load_dish_description, state=FSMAdmin.dish_description)

@@ -30,6 +30,7 @@ def get_data(html):
             "color": item.find('i', class_='color-icon').get('title'),
             "count_view": item.find('span').getText().strip(),
             'link': "https://www.mashina.kg" + item.find('a').get('href'),
+            "foto": item.find('a').find('div', class_='thumb-item-carousel').find('img').get('data-src')
         })
     # print(cars)
     return cars
