@@ -39,6 +39,8 @@ ptyprocess==0.7.0
 pycparser==2.20
 pylev==1.4.0
 pyparsing==2.4.7
+pypng==0.20220715.0
+PyQRCode==1.2.1
 python-decouple==3.6
 pytz==2022.1
 requests==2.26.0

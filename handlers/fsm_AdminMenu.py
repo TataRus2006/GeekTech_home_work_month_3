@@ -78,7 +78,7 @@ async def load_dish_price(message: types.Message, state: FSMContext):
                                          f"Цена блюда: {data['price']} сом\n")
         await bot_db.sql_command_insert(state)
         await state.finish()
-        await message.answer(f"Вы успешно добавили блюдо: \"{data['name']}\"", reply_markup=client_kb.start_marcup)
+        await message.answer(f"Вы успешно добавили блюдо: \"{data['name']}\"", reply_markup=client_kb.dishMenu)
     except:
         await message.answer("Вводите только цифры!")
 
@@ -87,7 +87,7 @@ async def cancel_add_dish(message: types.Message, state: FSMContext):
     if current_state is None:
         return
     else:
-        await message.answer("Добавление блюда отменено!", reply_markup=client_kb.mainMenu)
+        await message.answer("Добавление блюда отменено!", reply_markup=client_kb.dishMenu)
         await state.finish()
 
 

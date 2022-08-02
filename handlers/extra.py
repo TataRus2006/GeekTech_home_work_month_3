@@ -19,15 +19,15 @@ async def echo(message: types.Message):
     elif message.text.isdigit():
         await bot.send_message(message.chat.id, int(message.text) ** 2)
     elif message.text == "🔸️ Рандомное число":
-        await bot.send_message(message.from_user.id, 'Ваше число: ' + str(random.randint(1, 100)))
+        await bot.send_message(message.chat.id, 'Ваше число: ' + str(random.randint(1, 100)))
     elif message.text == "⬅️Главное меню":
-        await bot.send_message(message.from_user.id, '⬅️Главное меню', reply_markup=client_kb.mainMenu)
+        await bot.send_message(message.chat.id, '⬅️Главное меню', reply_markup=client_kb.mainMenu)
     elif message.text == "➡️Другое":
-        await bot.send_message(message.from_user.id, '➡️Другое', reply_markup=client_kb.otherMenu)
+        await bot.send_message(message.chat.id, '➡️Другое', reply_markup=client_kb.otherMenu)
     elif message.text == "🤡 Развлечение":
-        await bot.send_message(message.from_user.id, '🤡 Развлечение', reply_markup=client_kb.funMenu)
+        await bot.send_message(message.chat.id, '🤡 Развлечение', reply_markup=client_kb.funMenu)
     elif message.text == "🧆 Меню":
-        await bot.send_message(message.from_user.id, '🧆 Меню', reply_markup=client_kb.dishMenu)
+        await bot.send_message(message.chat.id, '🧆 Меню', reply_markup=client_kb.dishMenu)
     else:
         await bot.send_message(message.chat.id, message.text)
 
